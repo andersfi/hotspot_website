@@ -1,38 +1,55 @@
 ---
 import "../styles/global.css";
+import LanguageSwitcher from "../components/LanguageSwitcher.astro";
 
 interface Props {
   title: string;
   description?: string;
   activePage: "om" | "folk" | "kodebase" | "kart" | "publikasjonar";
+  lang: "no" | "en";
 }
 
-const { title, description = "Nasjonal portal for heildekkande kart over biologisk mangfald i Noreg", activePage } = Astro.props;
+const {
+  title,
+  description = "National portal for comprehensive biodiversity maps in Norway",
+  activePage,
+  lang,
+} = Astro.props;
 
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const langBase = `${base}/${lang}`;
+const htmlLang = lang === "en" ? "en" : "nn";
 
-const navLinks = [
-  { href: `${base}/`, label: "Om prosjektet", key: "om" },
-  { href: `${base}/folk/`, label: "Folk", key: "folk" },
-  { href: `${base}/kodebase/`, label: "Kodebase", key: "kodebase" },
-  { href: `${base}/kart/`, label: "Kart", key: "kart" },
-];
+const navLinks = lang === "no"
+  ? [
+      { href: `${langBase}/`,              label: "Om prosjektet", key: "om" },
+      { href: `${langBase}/folk/`,         label: "Folk",          key: "folk" },
+      { href: `${langBase}/kodebase/`,     label: "Kodebase",      key: "kodebase" },
+      { href: `${langBase}/kart/`,         label: "Kart",          key: "kart" },
+    ]
+  : [
+      { href: `${langBase}/`,              label: "About",         key: "om" },
+      { href: `${langBase}/folk/`,         label: "People",        key: "folk" },
+      { href: `${langBase}/kodebase/`,     label: "Codebase",      key: "kodebase" },
+      { href: `${langBase}/kart/`,         label: "Maps",          key: "kart" },
+    ];
+
+const footerContact = lang === "no" ? "Kontakt" : "Contact";
 ---
 
 <!doctype html>
-<html lang="nn">
+<html lang={htmlLang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <title>{title} · Hotspots</title>
     <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
-
   </head>
   <body>
     <header class="site-header">
       <div class="header-inner">
-        <a href={`${base}/`} class="site-logo">
+        <a href={`${langBase}/`} class="site-logo">
           <div class="logo-mark">
             <svg viewBox="0 0 24 24" fill="none" stroke="#2a6e3f" stroke-width="2.5" stroke-linecap="round">
               <circle cx="12" cy="12" r="9"/>
@@ -48,16 +65,17 @@ const navLinks = [
             <span class="logo-sub">Gjærevollsenteret · NTNU</span>
           </div>
         </a>
-        <nav>
-          {navLinks.map(link => (
-            <a
-              href={link.href}
-              class={activePage === link.key ? "active" : ""}
-            >
-              {link.label}
-            </a>
-          ))}
-        </nav>
+
+        <div class="header-right">
+          <nav>
+            {navLinks.map(link => (
+              <a href={link.href} class={activePage === link.key ? "active" : ""}>
+                {link.label}
+              </a>
+            ))}
+          </nav>
+          <LanguageSwitcher lang={lang} page={activePage} />
+        </div>
       </div>
     </header>
 
@@ -68,11 +86,11 @@ const navLinks = [
     <footer class="site-footer">
       <div class="footer-inner">
         <div class="footer-left">
-          <strong>Gjærevollsenteret · NTNU</strong> — Framtidsanalysar av naturmangfald
+          <strong>Gjærevollsenteret · NTNU</strong>
         </div>
         <div class="footer-right">
-          <a href="https://github.com/gjaerevollsenteret" target="_blank" rel="noopener">GitHub</a>
-          <a href="mailto:anders.finstad@ntnu.no">Kontakt</a>
+          <a href="https://github.com/gjearevoll" target="_blank" rel="noopener">GitHub</a>
+          <a href="mailto:anders.finstad@ntnu.no">{footerContact}</a>
           <a href="https://www.ntnu.no/gjaerevollsenteret" target="_blank" rel="noopener">Gjærevollsenteret</a>
         </div>
       </div>

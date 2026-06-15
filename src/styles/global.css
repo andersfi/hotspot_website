@@ -97,6 +97,11 @@ body {
   letter-spacing: 0.04em;
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
 nav {
   display: flex;
   gap: 0;

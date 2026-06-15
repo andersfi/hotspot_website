@@ -1,8 +1,8 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import Layout from "../../layouts/Layout.astro";
+import { NVA_PROJECT_URI, NVA_SEARCH_BASE, FETCH_OPTS } from "../../lib/nva.ts";
 
-const NVA_PROJECT_URI = "https://api.nva.unit.no/cristin/project/2769822";
-const NVA_SEARCH = `https://api.nva.unit.no/search/resources?project=${encodeURIComponent(NVA_PROJECT_URI)}&size=50&sort=publicationDate:desc`;
+const NVA_SEARCH = `${NVA_SEARCH_BASE}&size=50&sort=publicationDate:desc`;
 
 interface NvaContributor {
   identity?: { name?: string };
@@ -41,13 +41,7 @@ let publications: Publication[] = [];
 let fetchError = false;
 
 try {
-  const res = await fetch(NVA_SEARCH, {
-    headers: {
-      Accept: "application/json",
-      "User-Agent": "hotspots-website/1.0 (anders.finstad@ntnu.no)",
-    },
-    signal: AbortSignal.timeout(4000),
-  });
+  const res = await fetch(NVA_SEARCH, FETCH_OPTS);
 
   if (!res.ok) throw new Error(`NVA API returned ${res.status}`);
 
@@ -83,7 +77,7 @@ try {
 }
 ---
 
-<Layout title="Publikasjonar" activePage="publikasjonar">
+<Layout title="Publikasjonar" activePage="publikasjonar" lang="no">
   <div class="page-header">
     <div class="page-header-inner">
       <h1>Publikasjonar</h1>

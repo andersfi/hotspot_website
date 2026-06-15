@@ -1,0 +1,149 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import HeroCarousel from "../../components/HeroCarousel.astro";
+import { NVA_PROJECT_URI, NVA_SEARCH_BASE, FETCH_OPTS } from "../../lib/nva.ts";
+
+const NVA_SEARCH = `${NVA_SEARCH_BASE}&size=3&sort=publicationDate:desc`;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+let projectDescription = "";
+let funders: { name: string; ref: string }[] = [];
+try {
+  const res = await fetch(NVA_PROJECT_URI, FETCH_OPTS);
+  if (res.ok) {
+    const data = await res.json();
+    const summary = data.popularScientificSummary ?? {};
+    projectDescription = summary["en"] ?? summary["nb"] ?? "";
+    funders = (data.funding ?? []).map((f: any) => ({
+      name: f.labels?.["en"] ?? f.labels?.["nb"] ?? "",
+      ref: f.identifier ?? "",
+    })).filter((f: any) => f.name);
+  }
+} catch (_) {}
+
+let recentPubs: { title: string; authors: string; year: string; source: string; url: string }[] = [];
+try {
+  const res = await fetch(NVA_SEARCH, FETCH_OPTS);
+  if (res.ok) {
+    const data = await res.json();
+    recentPubs = (data.hits ?? []).map((hit: any) => {
+      const desc = hit.entityDescription ?? {};
+      const ctx = desc.reference?.publicationContext ?? {};
+      return {
+        title: desc.mainTitle ?? "Untitled",
+        authors: (desc.contributors ?? []).map((c: any) => c.identity?.name ?? "").filter(Boolean).join(", "),
+        year: desc.publicationDate?.year ?? "",
+        source: ctx.name ?? ctx.title ?? "Publication",
+        url: hit.handle ?? "",
+      };
+    });
+  }
+} catch (_) {}
+---
+
+<Layout title="About" activePage="om" lang="en">
+  <section class="hero hero--carousel">
+    <HeroCarousel />
+    <div class="hero-inner">
+      <p class="hero-eyebrow">NTNU Gjærevollsenteret · The Hotspots project</p>
+      <h1>Comprehensive maps of<br/>biodiversity in Norway</h1>
+      <p class="hero-tagline">
+        We develop the knowledge base for area-based nature management using
+        integrated species distribution models and open data.
+      </p>
+    </div>
+  </section>
+
+  <div class="section">
+    <div class="two-col">
+      <div class="prose">
+        <h2>About the Hotspots project</h2>
+        {projectDescription
+          ? projectDescription.split("\n\n").map((para: string) => <p>{para}</p>)
+          : <p>Description fetched from NVA at next build.</p>
+        }
+        <p style="margin-top:1rem;">
+          <a href="https://nva.sikt.no/projects/2769822" target="_blank" rel="noopener"
+             style="font-size:0.85rem; color:var(--green);">
+            See the project in NVA →
+          </a>
+        </p>
+      </div>
+
+      <div>
+        <div class="card card-green">
+          <h3>Model quality and scope</h3>
+          <div class="stat-grid">
+            <div class="stat-item">
+              <div class="stat-item-num">7 700+</div>
+              <div class="stat-item-label">modelled species</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-item-num">35 mill.</div>
+              <div class="stat-item-label">observation records</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-item-num">500 m</div>
+              <div class="stat-item-label">spatial resolution</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-item-num">88 000+</div>
+              <div class="stat-item-label">contributors</div>
+            </div>
+          </div>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin-top:0.75rem;">
+            Hotspot classes: HS1 (top 1%), HS2 (top 5%), HS3 (top 10% most species-rich areas).
+            All maps are published with accompanying uncertainty maps.
+          </p>
+        </div>
+
+        <div class="card card-white">
+          <h3>Funded by</h3>
+          <div class="funder-list">
+            {funders.map(f => (
+              <div class="funder-item">
+                <div class="funder-dot"></div>
+                <span>{f.name}{f.ref ? <span class="funder-ref"> · {f.ref}</span> : ""}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-alt">
+    <div class="section">
+      <h2 class="section-heading">Recent publications</h2>
+      <div class="pub-list">
+        {recentPubs.map(pub => (
+          <a href={pub.url || "#"} class="pub-item"
+             target={pub.url ? "_blank" : undefined}
+             rel={pub.url ? "noopener noreferrer" : undefined}>
+            <div class="pub-body">
+              <div class="pub-title">{pub.title}</div>
+              <div class="pub-meta">
+                <span class="pub-year">{pub.year}</span>
+                {pub.authors} · {pub.source}
+              </div>
+            </div>
+            {pub.url && (
+              <div class="pub-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/>
+                  <line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+              </div>
+            )}
+          </a>
+        ))}
+      </div>
+      <p style="margin-top:1.5rem;">
+        <a href={`${base}/en/publikasjonar/`} style="color:var(--green); font-weight:600; text-decoration:none;">
+          See all publications →
+        </a>
+      </p>
+    </div>
+  </div>
+</Layout>

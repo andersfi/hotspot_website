@@ -1,0 +1,84 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { NVA_PROJECT_URI, NVA_SEARCH_BASE, FETCH_OPTS } from "../../lib/nva.ts";
+
+const NVA_SEARCH = `${NVA_SEARCH_BASE}&size=50&sort=publicationDate:desc`;
+
+interface Publication {
+  title: string; authors: string; year: string; source: string; url: string;
+}
+
+let publications: Publication[] = [];
+let fetchError = false;
+
+try {
+  const res = await fetch(NVA_SEARCH, FETCH_OPTS);
+  if (!res.ok) throw new Error(`NVA API returned ${res.status}`);
+  const data = await res.json();
+  publications = (data.hits ?? []).map((hit: any) => {
+    const desc = hit.entityDescription ?? {};
+    const ctx = desc.reference?.publicationContext ?? {};
+    const seriesName = ctx.name ?? ctx.title ?? "";
+    const seriesNum = ctx.seriesNumber ?? "";
+    return {
+      title: desc.mainTitle ?? "Untitled",
+      authors: (desc.contributors ?? []).map((c: any) => c.identity?.name ?? "").filter(Boolean).join(", "),
+      year: desc.publicationDate?.year ?? "",
+      source: seriesName ? `${seriesName}${seriesNum ? ` (${seriesNum})` : ""}` : "Publication",
+      url: hit.handle ?? "",
+    };
+  });
+} catch (_) { fetchError = true; }
+---
+
+<Layout title="Publications" activePage="publikasjonar" lang="en">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <h1>Publications</h1>
+      <p>
+        Reports, notes and datasets from the Hotspots project. Fetched automatically from
+        <a href="https://nva.sikt.no/projects/2769822" target="_blank" rel="noopener" style="color:var(--green)">NVA</a>.
+      </p>
+    </div>
+  </div>
+
+  <div class="section">
+    {fetchError && (
+      <div class="fetch-error">Could not fetch publications from NVA right now. Try reloading the page.</div>
+    )}
+    {!fetchError && publications.length === 0 && (
+      <p style="color:var(--text-muted)">No publications found.</p>
+    )}
+    {publications.length > 0 && (
+      <div class="pub-list">
+        {publications.map((pub) => (
+          <a href={pub.url || "#"} class="pub-item"
+             target={pub.url ? "_blank" : undefined}
+             rel={pub.url ? "noopener noreferrer" : undefined}>
+            <div class="pub-body">
+              <div class="pub-title">{pub.title}</div>
+              <div class="pub-meta">
+                <span class="pub-year">{pub.year}</span>
+                {pub.authors && <span>{pub.authors} · </span>}
+                <em>{pub.source}</em>
+              </div>
+            </div>
+            {pub.url && (
+              <div class="pub-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/>
+                  <line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+              </div>
+            )}
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+</Layout>
+
+<style>
+.fetch-error { background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; padding: 1rem 1.25rem; color: #856404; margin-bottom: 1.5rem; font-size: 0.92rem; }
+</style>
