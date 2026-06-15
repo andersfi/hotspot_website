@@ -4,8 +4,27 @@ import Layout from "../layouts/Layout.astro";
 const NVA_PROJECT_URI = "https://api.nva.unit.no/cristin/project/2769822";
 const NVA_SEARCH = `https://api.nva.unit.no/search/resources?project=${encodeURIComponent(NVA_PROJECT_URI)}&size=3&sort=publicationDate:desc`;
 
-let recentPubs: { title: string; authors: string; year: string; source: string; url: string }[] = [];
+const lang = "nb"; // change to "en" for English page
 
+// Fetch project description
+let projectDescription = "";
+try {
+  const res = await fetch(NVA_PROJECT_URI, {
+    headers: {
+      Accept: "application/json",
+      "User-Agent": "hotspots-website/1.0 (anders.finstad@ntnu.no)",
+    },
+  });
+  if (res.ok) {
+    const data = await res.json();
+    const summary = data.popularScientificSummary ?? {};
+    // use requested language, fall back to nb, then en
+    projectDescription = summary[lang] ?? summary["nb"] ?? summary["en"] ?? "";
+  }
+} catch (_) {}
+
+// Fetch recent publications
+let recentPubs: { title: string; authors: string; year: string; source: string; url: string }[] = [];
 try {
   const res = await fetch(NVA_SEARCH, {
     headers: {
@@ -49,28 +68,15 @@ try {
       <!-- LEFT: Om prosjektet -->
       <div class="prose">
         <h2>Om Hotspot-prosjektet</h2>
-        <p>
-          Hotspot-prosjektet utviklar heildekkande kart over artsmangfald i Noreg
-          for å støtte kunnskapsbasert naturforvaltning. Avvegingar mellom naturvern
-          og andre samfunnsinteresser kan ikkje gjerast utan å kjenne den romlege
-          fordelinga av naturverdiar.
-        </p>
-        <p>
-          Vi nyttar <strong>integrerte artsutbreiingsmodellar (iSDM)</strong> som
-          kombinerer førekomstdata frå folkeforsking og naturhistoriske samlingar,
-          innsamlingsdata med informasjon om observasjonsinnsats, og heildekkande
-          miljødata. Resultata har ein romleg oppløysing på <strong>500 × 500 m</strong>
-          og dekkjer heile Noreg.
-        </p>
-        <p>
-          Prosjektet fokuserer på fem artsgrupper i terrestriske økosystem:
-          <strong>fuglar, insekt og edderkoppdyr, karplantar, sopp og lav</strong>.
-          Alle data, kode og resultat er ope tilgjengelege for vidare arbeid.
-        </p>
-        <p>
-          Arbeidet er utført på oppdrag frå Miljødirektoratet i samarbeid med
-          Norsk institutt for naturforskning (NINA), Senter for berekraftig
-          arealbruk (CeSAM/UiB) og Noregs miljø- og biovitskaplege universitet (NMBU).
+        {projectDescription
+          ? projectDescription.split("\n\n").map((para: string) => <p>{para}</p>)
+          : <p>Beskriving vert henta frå NVA ved neste bygg.</p>
+        }
+        <p style="margin-top:1rem;">
+          <a href="https://nva.sikt.no/projects/2769822" target="_blank" rel="noopener"
+             style="font-size:0.85rem; color:var(--green);">
+            Sjå prosjektet i NVA →
+          </a>
         </p>
       </div>
 
