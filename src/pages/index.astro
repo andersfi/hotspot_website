@@ -6,16 +6,19 @@ const NVA_SEARCH = `https://api.nva.unit.no/search/resources?project=${encodeURI
 
 const lang = "nb"; // change to "en" for English page
 
+const FETCH_OPTS = {
+  headers: {
+    Accept: "application/json",
+    "User-Agent": "hotspots-website/1.0 (anders.finstad@ntnu.no)",
+  },
+  signal: AbortSignal.timeout(4000),
+};
+
 // Fetch project description and funders
 let projectDescription = "";
 let funders: { name: string; ref: string }[] = [];
 try {
-  const res = await fetch(NVA_PROJECT_URI, {
-    headers: {
-      Accept: "application/json",
-      "User-Agent": "hotspots-website/1.0 (anders.finstad@ntnu.no)",
-    },
-  });
+  const res = await fetch(NVA_PROJECT_URI, FETCH_OPTS);
   if (res.ok) {
     const data = await res.json();
     const summary = data.popularScientificSummary ?? {};
@@ -31,12 +34,7 @@ try {
 // Fetch recent publications
 let recentPubs: { title: string; authors: string; year: string; source: string; url: string }[] = [];
 try {
-  const res = await fetch(NVA_SEARCH, {
-    headers: {
-      Accept: "application/json",
-      "User-Agent": "hotspots-website/1.0 (anders.finstad@ntnu.no)",
-    },
-  });
+  const res = await fetch(NVA_SEARCH, FETCH_OPTS);
   if (res.ok) {
     const data = await res.json();
     recentPubs = (data.hits ?? []).map((hit: any) => {

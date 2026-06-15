@@ -46,6 +46,7 @@ try {
       Accept: "application/json",
       "User-Agent": "hotspots-website/1.0 (anders.finstad@ntnu.no)",
     },
+    signal: AbortSignal.timeout(4000),
   });
 
   if (!res.ok) throw new Error(`NVA API returned ${res.status}`);

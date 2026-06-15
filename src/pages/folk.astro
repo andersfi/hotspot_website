@@ -28,11 +28,17 @@ function roleLabel(role: string): string {
   return map[role] ?? role;
 }
 
+const FETCH_OPTS = {
+  headers: { "User-Agent": "hotspots-website/1.0 (anders.finstad@ntnu.no)" },
+  signal: AbortSignal.timeout(4000),
+};
+
 async function fetchOrcid(cristinId: string): Promise<string | undefined> {
   try {
-    const res = await fetch(`https://api.cristin.no/v2/persons/${cristinId}?format=json`, {
-      headers: { "User-Agent": "hotspots-website/1.0 (anders.finstad@ntnu.no)" },
-    });
+    const res = await fetch(
+      `https://api.cristin.no/v2/persons/${cristinId}?format=json`,
+      FETCH_OPTS
+    );
     if (!res.ok) return undefined;
     const data = await res.json();
     return data.orcid?.id ?? data.identifiers?.orcid ?? undefined;
@@ -47,10 +53,8 @@ let contributors: Person[] = [];
 
 try {
   const res = await fetch(NVA_PROJECT_URI, {
-    headers: {
-      Accept: "application/json",
-      "User-Agent": "hotspots-website/1.0 (anders.finstad@ntnu.no)",
-    },
+    ...FETCH_OPTS,
+    headers: { ...FETCH_OPTS.headers, Accept: "application/json" },
   });
   if (res.ok) {
     const data = await res.json();
@@ -87,10 +91,8 @@ const coreIds = new Set(coreTeam.map((p) => p.cristinId));
 
 try {
   const res = await fetch(NVA_SEARCH, {
-    headers: {
-      Accept: "application/json",
-      "User-Agent": "hotspots-website/1.0 (anders.finstad@ntnu.no)",
-    },
+    ...FETCH_OPTS,
+    headers: { ...FETCH_OPTS.headers, Accept: "application/json" },
   });
   if (res.ok) {
     const data = await res.json();
