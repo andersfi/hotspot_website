@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import HeroCarousel from "../components/HeroCarousel.astro";
 
 const NVA_PROJECT_URI = "https://api.nva.unit.no/cristin/project/2769822";
 const NVA_SEARCH = `https://api.nva.unit.no/search/resources?project=${encodeURIComponent(NVA_PROJECT_URI)}&size=3&sort=publicationDate:desc`;
@@ -54,7 +55,8 @@ try {
 
 <Layout title="Om prosjektet" activePage="om">
   <!-- HERO -->
-  <section class="hero">
+  <section class="hero hero--carousel">
+    <HeroCarousel />
     <div class="hero-inner">
       <p class="hero-eyebrow">NTNU Gjærevollsenteret · Hotspot-prosjektet</p>
       <h1>Heildekkande kart over<br/>biologisk mangfald i Noreg</h1>

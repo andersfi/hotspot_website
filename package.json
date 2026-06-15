@@ -5,9 +5,15 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "optimise-images": "node scripts/optimise-images.js"
   },
   "dependencies": {
-    "astro": "^4.15.0"
+    "astro": "^4.15.0",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "sharp": "^0.33.5"
   }
 }
