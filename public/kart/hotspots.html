@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="nn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hotspot-kart</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+    #map { height: 100%; width: 100%; }
+    .map-notice {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 0.6rem 0.9rem;
+      font-family: system-ui, sans-serif;
+      font-size: 0.8rem;
+      color: #555;
+      max-width: 220px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+    .map-notice strong { color: #2a6e3f; display: block; margin-bottom: 0.2rem; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div class="map-notice">
+    <strong>Hotspot-kart (demo)</strong>
+    Interaktivt kart kjem her. Koble til WMS-teneste eller legg til GeoJSON-lag med hotspot-data.
+  </div>
+  <script>
+    const map = L.map('map').setView([65.0, 15.0], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 18,
+    }).addTo(map);
+
+    // Placeholder: bounding box for Norway
+    const norwaybounds = [[57.8, 4.5], [71.2, 31.5]];
+    L.rectangle(norwaybounds, {
+      color: '#2a6e3f',
+      weight: 1,
+      fillOpacity: 0.03,
+      dashArray: '4 4'
+    }).addTo(map).bindPopup('Hotspot-data vert lagt til her');
+  </script>
+</body>
+</html>

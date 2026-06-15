@@ -1,0 +1,86 @@
+[
+  {
+    "name": "Anders Gravbrøt Finstad",
+    "title": "Prosjektleiar",
+    "role": "Prosjektleiing og fagleg koordinering",
+    "institution": "NTNU Gjærevollsenteret / Institutt for naturhistorie",
+    "email": "anders.finstad@ntnu.no"
+  },
+  {
+    "name": "Ivar Herfindal",
+    "title": "Nestleiar",
+    "role": "Fagleg leiing og statistikk",
+    "institution": "NTNU Gjærevollsenteret / Fakultet for naturvitskap",
+    "email": "ivar.herfindal@ntnu.no"
+  },
+  {
+    "name": "Sam Wenaas Perrin",
+    "title": "Forskar",
+    "role": "Programmering, arbeidsflyt og formidlingsverktøy",
+    "institution": "NTNU Gjærevollsenteret / Fakultet for naturvitskap",
+    "email": "sam.perrin@ntnu.no"
+  },
+  {
+    "name": "Kwaku Peprah Adjei",
+    "title": "Forskar",
+    "role": "Programmering og kjøring av arbeidsflyt",
+    "institution": "Norsk institutt for naturforskning (NINA)",
+    "email": "kwaku.adjei@nina.no"
+  },
+  {
+    "name": "Philip Stanley Mostert",
+    "title": "Forskar",
+    "role": "Utvikling av utbreiingsmodellar",
+    "institution": "NTNU Gjærevollsenteret / Institutt for matematiske fag",
+    "email": "philip.s.mostert@ntnu.no"
+  },
+  {
+    "name": "Ron Ronald Togunov",
+    "title": "Forskar",
+    "role": "Utvikling av utbreiingsmodellar",
+    "institution": "NTNU Gjærevollsenteret / Institutt for matematiske fag",
+    "email": "ron.togunov@ntnu.no"
+  },
+  {
+    "name": "Robert Brian O'Hara",
+    "title": "Professor",
+    "role": "Overordna ansvar for statistiske metodar",
+    "institution": "NTNU Gjærevollsenteret / Institutt for matematiske fag",
+    "email": "bob.ohara@ntnu.no"
+  },
+  {
+    "name": "Joachim Paul Töpper",
+    "title": "Forskar",
+    "role": "Prosjektkonsept og kjeldekode",
+    "institution": "Norsk institutt for naturforskning (NINA)",
+    "email": "joachim.topper@nina.no"
+  },
+  {
+    "name": "Joseph Chipperfield",
+    "title": "Forskar",
+    "role": "Prosjektkonsept og kjeldekode",
+    "institution": "Norsk institutt for naturforskning (NINA)",
+    "email": "joseph.chipperfield@nina.no"
+  },
+  {
+    "name": "Jon Arvid Grytnes",
+    "title": "Professor",
+    "role": "Feltvalidering og artsøkologi",
+    "institution": "NMBU / Universitetet i Bergen",
+    "email": "john-arvid.grytnes@nmbu.no"
+  },
+  {
+    "name": "Hanne Bjørnås Krogstie",
+    "title": "Forskar",
+    "role": "Ferskvannsmodellar",
+    "institution": "NTNU Gjærevollsenteret",
+    "email": ""
+  },
+  {
+    "name": "Lisbeth Pedersen",
+    "title": "Koordinator",
+    "role": "Prosjektkoordinering og økonomi",
+    "institution": "NTNU Gjærevollsenteret",
+    "email": ""
+  }
+]

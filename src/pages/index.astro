@@ -1,0 +1,142 @@
+---
+import Layout from "../layouts/Layout.astro";
+import publications from "../data/publications.json";
+
+const recentPubs = publications.slice(0, 3);
+---
+
+<Layout title="Om prosjektet" activePage="om">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="hero-eyebrow">NTNU Gjærevollsenteret · Hotspot-prosjektet</p>
+      <h1>Heildekkande kart over<br/>biologisk mangfald i Noreg</h1>
+      <p class="hero-tagline">
+        Vi utviklar kunnskapsgrunnlag for arealbasert forvaltning av natur ved hjelp av
+        integrerte artsutbreiingsmodellar og opne data.
+      </p>
+    </div>
+  </section>
+
+  <!-- TWO COL -->
+  <div class="section">
+    <div class="two-col">
+      <!-- LEFT: Om prosjektet -->
+      <div class="prose">
+        <h2>Om Hotspot-prosjektet</h2>
+        <p>
+          Hotspot-prosjektet utviklar heildekkande kart over artsmangfald i Noreg
+          for å støtte kunnskapsbasert naturforvaltning. Avvegingar mellom naturvern
+          og andre samfunnsinteresser kan ikkje gjerast utan å kjenne den romlege
+          fordelinga av naturverdiar.
+        </p>
+        <p>
+          Vi nyttar <strong>integrerte artsutbreiingsmodellar (iSDM)</strong> som
+          kombinerer førekomstdata frå folkeforsking og naturhistoriske samlingar,
+          innsamlingsdata med informasjon om observasjonsinnsats, og heildekkande
+          miljødata. Resultata har ein romleg oppløysing på <strong>500 × 500 m</strong>
+          og dekkjer heile Noreg.
+        </p>
+        <p>
+          Prosjektet fokuserer på fem artsgrupper i terrestriske økosystem:
+          <strong>fuglar, insekt og edderkoppdyr, karplantar, sopp og lav</strong>.
+          Alle data, kode og resultat er ope tilgjengelege for vidare arbeid.
+        </p>
+        <p>
+          Arbeidet er utført på oppdrag frå Miljødirektoratet i samarbeid med
+          Norsk institutt for naturforskning (NINA), Senter for berekraftig
+          arealbruk (CeSAM/UiB) og Noregs miljø- og biovitskaplege universitet (NMBU).
+        </p>
+      </div>
+
+      <!-- RIGHT: Cards -->
+      <div>
+        <div class="card card-green">
+          <h3>Modellkvalitet og omfang</h3>
+          <div class="stat-grid">
+            <div class="stat-item">
+              <div class="stat-item-num">7 700+</div>
+              <div class="stat-item-label">modelerte artar</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-item-num">35 mill.</div>
+              <div class="stat-item-label">observasjonspostar</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-item-num">500 m</div>
+              <div class="stat-item-label">romleg oppløysing</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-item-num">88 000+</div>
+              <div class="stat-item-label">bidragsytarar</div>
+            </div>
+          </div>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin-top:0.75rem;">
+            Hotspot-klassar: HS1 (topp 1 %), HS2 (topp 5 %), HS3 (topp 10 % artsrikaste område).
+            Alle kart publiserast med tilhøyrande usikkerheitskart.
+          </p>
+        </div>
+
+        <div class="card card-white">
+          <h3>Finansiert av</h3>
+          <div class="funder-list">
+            <div class="funder-item">
+              <div class="funder-dot"></div>
+              Miljødirektoratet (M-2986|2025, M-2987|2025, M-3126|2026)
+            </div>
+            <div class="funder-item">
+              <div class="funder-dot"></div>
+              Noregs forskingsråd
+            </div>
+            <div class="funder-item">
+              <div class="funder-dot"></div>
+              EU-program (parallelle aktivitetar)
+            </div>
+          </div>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin-top:0.75rem;">
+            Prosjektet er eit samarbeid mellom NTNU Gjærevollsenteret, NINA, CeSAM/UiB og NMBU.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PUBLICATIONS PREVIEW -->
+  <div class="section-alt">
+    <div class="section">
+      <h2 class="section-heading">Siste publikasjonar</h2>
+      <div class="pub-list">
+        {recentPubs.map(pub => (
+          <a
+            href={pub.url || "#"}
+            class="pub-item"
+            target={pub.url ? "_blank" : undefined}
+            rel={pub.url ? "noopener noreferrer" : undefined}
+          >
+            <div class="pub-body">
+              <div class="pub-title">{pub.title}</div>
+              <div class="pub-meta">
+                <span class="pub-year">{pub.year}</span>
+                {pub.authors} · {pub.source}
+              </div>
+            </div>
+            {pub.url && (
+              <div class="pub-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/>
+                  <line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+              </div>
+            )}
+          </a>
+        ))}
+      </div>
+      <p style="margin-top:1.5rem;">
+        <a href={`${import.meta.env.BASE_URL}/publikasjonar/`} style="color:var(--green); font-weight:600; text-decoration:none;">
+          Sjå alle publikasjonar →
+        </a>
+      </p>
+    </div>
+  </div>
+</Layout>

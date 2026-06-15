@@ -1,0 +1,43 @@
+---
+import Layout from "../layouts/Layout.astro";
+import publications from "../data/publications.json";
+---
+
+<Layout title="Publikasjonar" activePage="publikasjonar">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <h1>Publikasjonar</h1>
+      <p>Rapportar, notat og datasett frå Hotspot-prosjektet.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="pub-list">
+      {publications.map(pub => (
+        <a
+          href={pub.url || "#"}
+          class="pub-item"
+          target={pub.url ? "_blank" : undefined}
+          rel={pub.url ? "noopener noreferrer" : undefined}
+        >
+          <div class="pub-body">
+            <div class="pub-title">{pub.title}</div>
+            <div class="pub-meta">
+              <span class="pub-year">{pub.year}</span>
+              {pub.authors} · <em>{pub.source}</em>
+            </div>
+          </div>
+          {pub.url && (
+            <div class="pub-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                <polyline points="15 3 21 3 21 9"/>
+                <line x1="10" y1="14" x2="21" y2="3"/>
+              </svg>
+            </div>
+          )}
+        </a>
+      ))}
+    </div>
+  </div>
+</Layout>

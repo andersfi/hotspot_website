@@ -1,0 +1,40 @@
+---
+import Layout from "../layouts/Layout.astro";
+import team from "../data/team.json";
+
+function initials(name: string) {
+  return name
+    .split(" ")
+    .filter((_, i, arr) => i === 0 || i === arr.length - 1)
+    .map(n => n[0])
+    .join("");
+}
+---
+
+<Layout title="Folk" activePage="folk">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <h1>Prosjektteamet</h1>
+      <p>Forskarar og bidragsytarar frå NTNU, NINA, UiB og NMBU.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="team-grid">
+      {team.map(person => (
+        <div class="team-card">
+          <div class="team-avatar">{initials(person.name)}</div>
+          <div class="team-name">{person.name}</div>
+          <div class="team-title">{person.title}</div>
+          <div class="team-role">{person.role}</div>
+          <div class="team-institution">{person.institution}</div>
+          {person.email && (
+            <div class="team-email">
+              <a href={`mailto:${person.email}`}>{person.email}</a>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+</Layout>
