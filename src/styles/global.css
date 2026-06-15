@@ -286,11 +286,17 @@ nav a.active {
 }
 
 .funder-dot {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: var(--green);
   flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.funder-ref {
+  font-size: 0.78rem;
+  color: var(--text-muted);
 }
 
 /* ── SECTION HEADINGS ── */

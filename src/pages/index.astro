@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import funders from "../data/funders.json";
 
 const NVA_PROJECT_URI = "https://api.nva.unit.no/cristin/project/2769822";
 const NVA_SEARCH = `https://api.nva.unit.no/search/resources?project=${encodeURIComponent(NVA_PROJECT_URI)}&size=3&sort=publicationDate:desc`;
@@ -111,22 +112,15 @@ try {
         <div class="card card-white">
           <h3>Finansiert av</h3>
           <div class="funder-list">
-            <div class="funder-item">
-              <div class="funder-dot"></div>
-              Miljødirektoratet (M-2986|2025, M-2987|2025, M-3126|2026)
-            </div>
-            <div class="funder-item">
-              <div class="funder-dot"></div>
-              Noregs forskingsråd
-            </div>
-            <div class="funder-item">
-              <div class="funder-dot"></div>
-              EU-program (parallelle aktivitetar)
-            </div>
+            {funders.map(f => (
+              <div class="funder-item">
+                <div class="funder-dot"></div>
+                <span>
+                  {f.name}{f.ref ? <span class="funder-ref"> · {f.ref}</span> : ""}
+                </span>
+              </div>
+            ))}
           </div>
-          <p style="font-size:0.82rem; color:var(--text-muted); margin-top:0.75rem;">
-            Prosjektet er eit samarbeid mellom NTNU Gjærevollsenteret, NINA, CeSAM/UiB og NMBU.
-          </p>
         </div>
       </div>
     </div>
