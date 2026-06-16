@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import LanguageSwitcher from "../components/LanguageSwitcher.astro";
+import { config } from "../lib/config.ts";
 
 interface Props {
   title: string;
@@ -19,20 +20,23 @@ const {
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const langBase = `${base}/${lang}`;
 const htmlLang = lang === "en" ? "en" : "nn";
+const projectName = config.project.name[lang];
+const institution = config.project.institution[lang];
 
-const navLinks = lang === "no"
-  ? [
-      { href: `${langBase}/`,              label: "Om prosjektet", key: "om" },
-      { href: `${langBase}/folk/`,         label: "Folk",          key: "folk" },
-      { href: `${langBase}/kodebase/`,     label: "Kodebase",      key: "kodebase" },
-      { href: `${langBase}/kart/`,         label: "Kart",          key: "kart" },
-    ]
-  : [
-      { href: `${langBase}/`,              label: "About",         key: "om" },
-      { href: `${langBase}/folk/`,         label: "People",        key: "folk" },
-      { href: `${langBase}/kodebase/`,     label: "Codebase",      key: "kodebase" },
-      { href: `${langBase}/kart/`,         label: "Maps",          key: "kart" },
-    ];
+const navLinks =
+  lang === "no"
+    ? [
+        { href: `${langBase}/`,          label: "Om prosjektet", key: "om" },
+        { href: `${langBase}/folk/`,     label: "Folk",          key: "folk" },
+        { href: `${langBase}/kodebase/`, label: "Kodebase",      key: "kodebase" },
+        { href: `${langBase}/kart/`,     label: "Kart",          key: "kart" },
+      ]
+    : [
+        { href: `${langBase}/`,          label: "About",         key: "om" },
+        { href: `${langBase}/folk/`,     label: "People",        key: "folk" },
+        { href: `${langBase}/kodebase/`, label: "Codebase",      key: "kodebase" },
+        { href: `${langBase}/kart/`,     label: "Maps",          key: "kart" },
+      ];
 
 const footerContact = lang === "no" ? "Kontakt" : "Contact";
 ---
@@ -43,7 +47,7 @@ const footerContact = lang === "no" ? "Kontakt" : "Contact";
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
-    <title>{title} · Hotspots</title>
+    <title>{title} · {projectName}</title>
     <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
   </head>
   <body>
@@ -61,8 +65,8 @@ const footerContact = lang === "no" ? "Kontakt" : "Contact";
             </svg>
           </div>
           <div class="logo-text">
-            <span class="logo-name">Hotspots</span>
-            <span class="logo-sub">Gjærevollsenteret · NTNU</span>
+            <span class="logo-name">{projectName}</span>
+            <span class="logo-sub">{institution}</span>
           </div>
         </a>
 
@@ -86,12 +90,12 @@ const footerContact = lang === "no" ? "Kontakt" : "Contact";
     <footer class="site-footer">
       <div class="footer-inner">
         <div class="footer-left">
-          <strong>Gjærevollsenteret · NTNU</strong>
+          <strong>{institution}</strong>
         </div>
         <div class="footer-right">
-          <a href="https://github.com/gjearevoll" target="_blank" rel="noopener">GitHub</a>
-          <a href="mailto:anders.finstad@ntnu.no">{footerContact}</a>
-          <a href="https://www.ntnu.no/gjaerevollsenteret" target="_blank" rel="noopener">Gjærevollsenteret</a>
+          <a href={config.project.github_org} target="_blank" rel="noopener">GitHub</a>
+          <a href={`mailto:${config.project.contact_email}`}>{footerContact}</a>
+          <a href={config.project.institution_url} target="_blank" rel="noopener">{institution}</a>
         </div>
       </div>
     </footer>

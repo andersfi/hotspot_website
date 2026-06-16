@@ -1,20 +1,35 @@
-export const NVA_PROJECT_URI = "https://api.nva.unit.no/cristin/project/2769822";
-export const NVA_SEARCH_BASE = `https://api.nva.unit.no/search/resources?project=${encodeURIComponent(NVA_PROJECT_URI)}`;
+/**
+ * NVA and Cristin API helpers — build-time only.
+ * All functions create a fresh AbortSignal per call (signals cannot be reused).
+ */
 
-export const FETCH_OPTS = {
-  headers: {
-    Accept: "application/json",
-    "User-Agent": "hotspots-website/1.0 (anders.finstad@ntnu.no)",
-  },
-  signal: AbortSignal.timeout(4000),
-};
+// ── Internal fetch option factories ───────────────────────────────────────────
 
-export const CRISTIN_FETCH_OPTS = {
-  headers: { "User-Agent": "hotspots-website/1.0 (anders.finstad@ntnu.no)" },
-  signal: AbortSignal.timeout(4000),
-};
+function makeFetchOpts(): RequestInit {
+  return {
+    headers: {
+      Accept: "application/json",
+      "User-Agent": "hotspots-website/1.0 (anders.finstad@ntnu.no)",
+    },
+    signal: AbortSignal.timeout(4000),
+  };
+}
 
-/** Pick the best label for a given lang, falling back nb → en */
+function makeCristinOpts(): RequestInit {
+  return {
+    headers: { "User-Agent": "hotspots-website/1.0 (anders.finstad@ntnu.no)" },
+    signal: AbortSignal.timeout(4000),
+  };
+}
+
+// ── URL helpers ────────────────────────────────────────────────────────────────
+
+/** Full NVA Cristin project URI from a project ID. */
+export function nvaProjectUri(cristinProjectId: string): string {
+  return `https://api.nva.unit.no/cristin/project/${cristinProjectId}`;
+}
+
+/** Pick the best label for a display language, falling back nb → en. */
 export function pickLabel(
   labels: Record<string, string> | undefined,
   lang: string
@@ -24,20 +39,210 @@ export function pickLabel(
   return labels["nb"] ?? labels["nn"] ?? labels["en"] ?? "";
 }
 
+/** Extract a Cristin person ID from a full person URI. */
 export function cristinIdFromUri(uri: string): string {
   return uri.split("/").pop() ?? "";
 }
 
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+export interface Publication {
+  title: string;
+  authors: string;
+  year: string;
+  source: string;
+  url: string;
+}
+
+export interface CorePerson {
+  cristinId: string;
+  name: string;
+  /** Raw NVA role type, e.g. "ProjectManager" | "ProjectParticipant" */
+  roleType: string;
+  institution: string;
+  orcid?: string;
+}
+
+export interface PubContributor {
+  cristinId: string;
+  name: string;
+  institution: string;
+}
+
+export interface ProjectMeta {
+  /** popularScientificSummary keyed by language code (nb, en, …) */
+  description: Record<string, string>;
+  funders: { name: string; ref: string }[];
+}
+
+// ── API functions ──────────────────────────────────────────────────────────────
+
+/** Fetch an ORCID identifier from the Cristin person API. Returns undefined on error. */
 export async function fetchOrcid(cristinId: string): Promise<string | undefined> {
   try {
     const res = await fetch(
       `https://api.cristin.no/v2/persons/${cristinId}?format=json`,
-      CRISTIN_FETCH_OPTS
+      makeCristinOpts()
     );
     if (!res.ok) return undefined;
     const data = await res.json();
     return data.orcid?.id ?? undefined;
   } catch {
     return undefined;
+  }
+}
+
+/**
+ * Fetch publications for a Cristin project, sorted newest first.
+ * Returns an empty array on any error (logs a warning).
+ */
+export async function fetchPublications(
+  cristinProjectId: string,
+  opts: { size?: number; sort?: string } = {}
+): Promise<Publication[]> {
+  const { size = 50, sort = "publicationDate:desc" } = opts;
+  const projectUri = nvaProjectUri(cristinProjectId);
+  const url = `https://api.nva.unit.no/search/resources?project=${encodeURIComponent(projectUri)}&size=${size}&sort=${sort}`;
+
+  try {
+    const res = await fetch(url, makeFetchOpts());
+    if (!res.ok) {
+      console.warn(`[nva] Publications fetch returned ${res.status}`);
+      return [];
+    }
+    const data = await res.json();
+    return (data.hits ?? []).map((hit: any) => {
+      const desc = hit.entityDescription ?? {};
+      const ctx = desc.reference?.publicationContext ?? {};
+      const seriesName = ctx.name ?? ctx.title ?? "";
+      const seriesNum = ctx.seriesNumber ?? "";
+      return {
+        title: desc.mainTitle ?? hit.mainTitle ?? "Untitled",
+        authors: (desc.contributors ?? hit.contributors ?? [])
+          .map((c: any) => c.identity?.name ?? "")
+          .filter(Boolean)
+          .join(", "),
+        year: desc.publicationDate?.year ?? hit.publicationDate?.year ?? "",
+        source: seriesName
+          ? `${seriesName}${seriesNum ? ` (${seriesNum})` : ""}`
+          : "",
+        url:
+          hit.handle ??
+          (hit.identifier ? `https://hdl.handle.net/${hit.identifier}` : ""),
+      } satisfies Publication;
+    });
+  } catch (e) {
+    console.warn("[nva] Publications fetch failed:", e);
+    return [];
+  }
+}
+
+/**
+ * Fetch project metadata: popular-science description and funders.
+ * Returns null on error.
+ */
+export async function fetchProjectMeta(
+  cristinProjectId: string
+): Promise<ProjectMeta | null> {
+  try {
+    const res = await fetch(nvaProjectUri(cristinProjectId), makeFetchOpts());
+    if (!res.ok) {
+      console.warn(`[nva] Project meta fetch returned ${res.status}`);
+      return null;
+    }
+    const data = await res.json();
+    return {
+      description: data.popularScientificSummary ?? {},
+      funders: (data.funding ?? [])
+        .map((f: any) => ({
+          name: f.labels?.["nb"] ?? f.labels?.["en"] ?? "",
+          ref: f.identifier ?? "",
+        }))
+        .filter((f: any) => f.name),
+    };
+  } catch (e) {
+    console.warn("[nva] Project meta fetch failed:", e);
+    return null;
+  }
+}
+
+/**
+ * Fetch the core project team from the NVA project API.
+ * Looks up each person's ORCID via the Cristin API in parallel.
+ * Returns an empty array on error.
+ */
+export async function fetchCoreTeam(
+  cristinProjectId: string
+): Promise<CorePerson[]> {
+  try {
+    const res = await fetch(nvaProjectUri(cristinProjectId), makeFetchOpts());
+    if (!res.ok) {
+      console.warn(`[nva] Core team fetch returned ${res.status}`);
+      return [];
+    }
+    const data = await res.json();
+    return Promise.all(
+      (data.contributors ?? []).map(async (c: any) => {
+        const cristinId = cristinIdFromUri(c.identity?.id ?? "");
+        const orcid = cristinId ? await fetchOrcid(cristinId) : undefined;
+        return {
+          cristinId,
+          name: `${c.identity?.firstName ?? ""} ${c.identity?.lastName ?? ""}`.trim(),
+          roleType: c.roles?.[0]?.type ?? "ProjectParticipant",
+          institution:
+            c.roles?.[0]?.affiliation?.labels?.nb ??
+            c.roles?.[0]?.affiliation?.labels?.en ??
+            "",
+          orcid,
+        } satisfies CorePerson;
+      })
+    );
+  } catch (e) {
+    console.warn("[nva] Core team fetch failed:", e);
+    return [];
+  }
+}
+
+/**
+ * Fetch unique contributors from publications, excluding IDs in `excludeIds`.
+ * Useful for finding co-authors beyond the registered project team.
+ * Returns an empty array on error.
+ */
+export async function fetchPublicationContributors(
+  cristinProjectId: string,
+  excludeIds: Set<string> = new Set()
+): Promise<PubContributor[]> {
+  const projectUri = nvaProjectUri(cristinProjectId);
+  const url = `https://api.nva.unit.no/search/resources?project=${encodeURIComponent(projectUri)}&size=50`;
+
+  try {
+    const res = await fetch(url, makeFetchOpts());
+    if (!res.ok) {
+      console.warn(`[nva] Publication contributors fetch returned ${res.status}`);
+      return [];
+    }
+    const data = await res.json();
+    const seen = new Set<string>();
+    const result: PubContributor[] = [];
+
+    for (const hit of data.hits ?? []) {
+      for (const c of hit.entityDescription?.contributors ?? []) {
+        const cristinId = cristinIdFromUri(c.identity?.id ?? "");
+        if (!cristinId || seen.has(cristinId) || excludeIds.has(cristinId)) continue;
+        seen.add(cristinId);
+        result.push({
+          cristinId,
+          name: c.identity?.name ?? "",
+          institution:
+            c.affiliations?.[0]?.labels?.nb ??
+            c.affiliations?.[0]?.labels?.en ??
+            "",
+        });
+      }
+    }
+    return result;
+  } catch (e) {
+    console.warn("[nva] Publication contributors fetch failed:", e);
+    return [];
   }
 }

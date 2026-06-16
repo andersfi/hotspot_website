@@ -1,0 +1,23 @@
+- name: "BiodiversityObservations"
+  url: "https://github.com/orgs/gjearevoll/repositories"
+  description:
+    no: "Samla infrastruktur for innhenting og prosessering av artsdata frå GBIF, naturhistoriske samlingar og folkeforsking."
+    en: "Shared infrastructure for retrieval and processing of species occurrence data from GBIF, natural history collections and citizen science."
+
+- name: "freshwaterHotspots"
+  url: "https://github.com/gjearevoll/freshwaterHotspots"
+  description:
+    no: "Tilpassa versjon av Hotspots-rørledningen for analyse av ferskvasstartar og akvatiske habitatmodellar."
+    en: "Adapted version of the Hotspots pipeline for analysis of freshwater species and aquatic habitat models."
+
+- name: "HotspotsDerived"
+  url: "https://github.com/gjearevoll/HotspotsDerived"
+  description:
+    no: "Produksjon og lagring av avleia produkt frå Hotspots-prosjektet, inkludert samanstilte kartlag og aggregerte indeksar."
+    en: "Production and storage of derived products from the Hotspots project, including composite map layers and aggregated indices."
+
+- name: "PointedSDMs"
+  url: "https://github.com/gjearevoll/PointedSDMs"
+  description:
+    no: "R-pakke for integrerte artsutbreiingsmodellar (iSDM) basert på inlabru, utvikla for analyse av heterogene datakjelder."
+    en: "R package for integrated species distribution models (iSDM) based on inlabru, developed for analysis of heterogeneous data sources."

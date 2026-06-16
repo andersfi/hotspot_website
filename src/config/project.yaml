@@ -1,0 +1,19 @@
+project:
+  name:
+    no: "Hotspots"
+    en: "Hotspots"
+  tagline:
+    no: "Heildekkande kart over biologisk mangfald i Noreg"
+    en: "Comprehensive maps of biodiversity across Norway"
+  institution:
+    no: "Gjærevollsenteret · NTNU"
+    en: "Gjærevoll Centre · NTNU"
+  github_org: "https://github.com/gjearevoll"
+  contact_email: "anders.finstad@ntnu.no"
+  institution_url: "https://www.ntnu.no/gjaerevollsenteret"
+  colors:
+    primary: "#2a6e3f"
+    dark: "#1d4d2a"
+
+nva:
+  cristin_project_id: "2769822"
