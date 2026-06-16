@@ -116,6 +116,11 @@ export async function fetchPublications(
       const ctx = desc.reference?.publicationContext ?? {};
       const seriesName = ctx.name ?? ctx.title ?? "";
       const seriesNum = ctx.seriesNumber ?? "";
+
+      // Handle URLs are stored in additionalIdentifiers, not hit.handle
+      const handleUrl = (hit.additionalIdentifiers ?? [])
+        .find((id: any) => id.type === "HandleIdentifier")?.value as string | undefined;
+
       return {
         title: desc.mainTitle ?? hit.mainTitle ?? "Untitled",
         authors: (desc.contributors ?? hit.contributors ?? [])
@@ -126,9 +131,7 @@ export async function fetchPublications(
         source: seriesName
           ? `${seriesName}${seriesNum ? ` (${seriesNum})` : ""}`
           : "",
-        url:
-          hit.handle ??
-          (hit.identifier ? `https://hdl.handle.net/${hit.identifier}` : ""),
+        url: hit.handle ?? handleUrl ?? "",
       } satisfies Publication;
     });
   } catch (e) {
