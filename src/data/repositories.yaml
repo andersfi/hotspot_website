@@ -13,8 +13,8 @@
 - name: "HotspotsDerived"
   url: "https://github.com/gjearevoll/HotspotsDerived"
   description:
-    no: "Produksjon og lagring av avleia produkt frå Hotspots-prosjektet, inkludert samanstilte kartlag og aggregerte indeksar."
-    en: "Production and storage of derived products from the Hotspots project, including composite map layers and aggregated indices."
+    no: "Produksjon og lagring av avleia produkt frå Hotspot-prosjektene, inkludert samanstilte kartlag og aggregerte indeksar."
+    en: "Production and storage of derived products from the Hotspots projects, including composite map layers and aggregated indices."
 
 - name: "PointedSDMs"
   url: "https://github.com/gjearevoll/PointedSDMs"
